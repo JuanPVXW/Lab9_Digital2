@@ -1,0 +1,54 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
+#include "inc/tm4c123gh6pm.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+
+int Push;
+int bandera;
+int main(void)
+{
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+    GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+    GPIO_PORTF_CR_R = 0x0f;
+    GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_0);
+    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+    while (1){
+        Push = GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0);
+        if(Push == 0)
+        {
+            bandera = 1;
+        }
+        if(bandera == 1)
+        {
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x08);
+        SysCtlDelay(30000000);
+        /***VerdeParpadeante***/
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x00);
+        SysCtlDelay(10000000);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x08);
+        SysCtlDelay(10000000);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x00);
+        SysCtlDelay(10000000);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x08);
+        SysCtlDelay(10000000);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x00);
+        SysCtlDelay(10000000);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x08);
+        SysCtlDelay(10000000);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x00);
+        SysCtlDelay(10000000);
+        /**************Amarillo***************/
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x04);
+        SysCtlDelay(20000000);
+        /************Rojo********************/
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0x02);
+        SysCtlDelay(10000000);
+        bandera = 0;
+        }
+    }
+}
